@@ -4,8 +4,10 @@ import Loader from "../components/Loader";
 import Card from "../components/Card";
 
 import FormField from "../components/FormField";
+// import { set } from "mongoose";
 
 const RenderCards = ({ data, title }) => {
+  console.log(data)
   if (data?.length > 0)
     return data.map((post) => <Card key={post._id} {...post}></Card>);
 
@@ -18,6 +20,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [allPosts, setAllPosts] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [searchedResults, setSearchedResults] = useState(null);
+  const [searchTimeOut, setSearchTimeOut] = useState(null);
   useEffect(() => {
     const fetchPost = async () => {
       setLoading(true);
@@ -41,6 +45,20 @@ export default function Home() {
     };
     fetchPost()
   }, []);
+  const handleSearchChange = (e) => {
+    clearTimeout(searchTimeOut);
+    setSearchText(e.target.value);
+
+    setSearchTimeOut(
+      setTimeout(() => {
+        const searchResult = allPosts.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()) || item.prompt.toLowerCase().includes(searchText.toLowerCase()));
+        console.log(searchResult)
+
+        setSearchedResults(searchResult);
+        console.log(searchedResults)
+      }, 500),
+    );
+  };
   return (
     <section className="max-w-7xl mx-auto">
       <div>
@@ -50,7 +68,14 @@ export default function Home() {
           images genrated by Open Ai
         </p>
         <div className="mt-16 ">
-          <FormField />
+          <FormField
+          LabelName="Search posts"
+          type="text"
+          name="text"
+          placeholder="Search posts"
+          value={searchText}
+          handleChange={handleSearchChange}
+           />
         </div>
         <div className="mt-10">
           {loading ? (
@@ -59,22 +84,21 @@ export default function Home() {
             </div>
           ) : (
             <>
-              {searchText ? (
+              {searchText && (
                 <h2 className="font-medium text-gray-700 text-xl mb-3 ">
                   Showing Result for <span className=""> {searchText}</span>
                 </h2>
-              ) : (
+              )}
                 <div className="grid lg:grid-cols-4  sm:grid-cols-3  xs:grid-cols-2  grid-cols-1 gap-3">
                   {searchText ? (
                     <RenderCards
-                      data="searchResults"
+                      data={searchedResults}
                       title="No search results found "
                     />
                   ) : (
-                    <RenderCards data={allPosts} title="no post found" />
+                    <RenderCards data={allPosts} title="no post yet" />
                   )}
                 </div>
-              )}
             </>
           )}
         </div>

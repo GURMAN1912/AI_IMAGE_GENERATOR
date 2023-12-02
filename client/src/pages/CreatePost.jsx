@@ -70,6 +70,7 @@ export default function CreatePost() {
 
   }
   const handleChange=(e)=>{
+    e.preventDefault()
     setForm({...form,[e.target.name]:e.target.value})
     
   }
@@ -102,7 +103,7 @@ export default function CreatePost() {
             <FormField
             LabelName="Prompt"
             type="text"
-            name='Prompt'
+            name='prompt'
             placeholder='an oil painting by Matisse of a humanoid robot playing chess'
             value={form.prompt}
             handleChange={handleChange}
@@ -142,7 +143,7 @@ export default function CreatePost() {
             <p className='mt-2 text-[#35393c] text-[14px] '>
               Once you have generated the Image you want, you can share it with others in the community
             </p>
-            <button className='mt-4 text-white bg-[#427D9D]  font-medium rounded-md w-full text-sm sm:m-auto 
+            <button onSubmit={handleSubmit} className='mt-4 text-white bg-[#427D9D]  font-medium rounded-md w-full text-sm sm:m-auto 
             p-2 text-center'  type='submit'>
               {loading?'Sharing..':'Share with community'}
             </button>
